@@ -1,0 +1,504 @@
+/* Modern UI for Mental Health Sentiment Analysis */
+
+:root {
+    --primary: #6366f1;
+    --primary-dark: #4f46e5;
+    --secondary: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --light: #f9fafb;
+    --dark: #1e293b;
+    --gray: #94a3b8;
+    --card-bg: #ffffff;
+    --border-radius: 12px;
+}
+
+body {
+    background-color: #f1f5f9;
+    font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--dark);
+    line-height: 1.7;
+    padding-bottom: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Compact header styling */
+.header-container.compact {
+    margin-bottom: 15px;
+}
+
+header {
+    padding: 15px 0;
+    text-align: center;
+    margin-bottom: 5px;
+}
+
+header h1 {
+    color: var(--dark);
+    font-weight: 800;
+    font-size: 2.2rem;
+    margin-bottom: 0;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+header p.lead {
+    color: var(--gray);
+    font-size: 1rem;
+    font-weight: 400;
+    margin-top: 5px;
+}
+
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.03);
+    margin-bottom: 15px;
+    background-color: var(--card-bg);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08), 0 15px 25px rgba(0, 0, 0, 0.05);
+}
+
+.card-body {
+    padding: 15px;
+}
+
+.card-title {
+    color: var(--dark);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.card-title i {
+    margin-right: 8px;
+    color: var(--primary);
+}
+
+textarea.form-control {
+    border-radius: var(--border-radius);
+    border: 1px solid #e2e8f0;
+    padding: 12px;
+    font-size: 15px;
+    resize: vertical;
+    min-height: 120px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+textarea.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--primary);
+    border: none;
+    border-radius: var(--border-radius);
+    padding: 8px 18px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.progress {
+    height: 8px;
+    border-radius: 4px;
+    background-color: #e2e8f0;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    background-color: var(--primary);
+    transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.progress-bar.bg-warning {
+    background-color: var(--warning) !important;
+}
+
+.progress-bar.bg-danger {
+    background-color: var(--danger) !important;
+}
+
+.progress-bar.bg-success {
+    background-color: var(--secondary) !important;
+}
+
+.analysis-text {
+    padding: 15px;
+    background-color: #f8fafc;
+    border-radius: var(--border-radius);
+    min-height: 120px;
+    max-height: 300px;
+    overflow-y: auto;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #475569;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.analysis-text h4 {
+    color: var(--dark);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 10px;
+    margin-top: 15px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.analysis-text h4:first-of-type {
+    margin-top: 0;
+}
+
+.analysis-text p {
+    margin-bottom: 10px;
+}
+
+.analysis-text strong {
+    color: var(--dark);
+}
+
+.analysis-text ul {
+    padding-left: 20px;
+    margin-bottom: 15px;
+}
+
+.analysis-text li {
+    margin-bottom: 8px;
+}
+
+/* Numbered suggestions styling */
+.analysis-text strong.d-block {
+    color: var(--primary-dark);
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+}
+
+/* Intensity label positioning */
+.intensity-label {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 6px;
+    font-weight: 500;
+    font-size: 0.8rem;
+    color: #475569;
+}
+
+.autism-score {
+    font-size: 1.8rem;
+    font-weight: 700;
+    text-align: center;
+    color: var(--primary);
+    margin: 0;
+    line-height: 1;
+}
+
+.emoji-icon {
+    font-size: 1rem;
+    margin-right: 3px;
+}
+
+/* Tab styling */
+.nav-tabs {
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 15px;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--gray);
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 8px 15px;
+    border-radius: 0;
+    margin-right: 5px;
+}
+
+.nav-tabs .nav-link:hover {
+    color: var(--primary);
+    background-color: rgba(99, 102, 241, 0.05);
+    border-bottom: 2px solid rgba(99, 102, 241, 0.3);
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--primary);
+    background-color: transparent;
+    border-bottom: 2px solid var(--primary);
+    font-weight: 600;
+}
+
+.tab-content {
+    padding-top: 5px;
+}
+
+/* Loading animation */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(3px);
+    border-radius: var(--border-radius);
+    z-index: 10;
+}
+
+.loading::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border: 3px solid rgba(99, 102, 241, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--primary);
+    animation: spin 1s linear infinite;
+    z-index: 11;
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 992px) {
+    .container {
+        padding: 15px;
+    }
+    
+    .card {
+        margin-bottom: 15px;
+    }
+    
+    .analysis-text {
+        max-height: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .card-body {
+        padding: 15px;
+    }
+    
+    .analysis-text {
+        min-height: 100px;
+    }
+}
+
+/* Tooltip for copy button */
+.copy-tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.copy-tooltip .tooltiptext {
+    visibility: hidden;
+    width: 80px;
+    background-color: var(--dark);
+    color: white;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -40px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+
+.copy-tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Alert styling */
+.alert {
+    border-radius: var(--border-radius);
+    padding: 12px;
+    margin-bottom: 20px;
+    border-left: 4px solid var(--warning);
+    background-color: rgba(245, 158, 11, 0.1);
+    font-size: 0.9rem;
+}
+
+.alert-warning {
+    color: #92400e;
+}
+
+.alert strong {
+    font-weight: 600;
+}
+
+/* Empty state styling */
+.text-muted.text-center {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    min-height: 100px;
+    font-size: 0.9rem;
+}
+
+/* Emphasis for results */
+.text-primary {
+    color: var(--primary) !important;
+}
+
+.text-danger {
+    color: var(--danger) !important;
+}
+
+.text-warning {
+    color: var(--warning) !important;
+}
+
+.text-success {
+    color: var(--secondary) !important;
+}
+
+/* Card title icons color-coding */
+.card-title i.fa-lightbulb {
+    color: var(--warning);
+}
+
+.card-title i.fa-comment-medical {
+    color: var(--primary);
+}
+
+.card-title i.fa-chart-pie {
+    color: var(--secondary);
+}
+
+.card-title i.fa-sliders-h {
+    color: var(--danger);
+}
+
+/* Copy button styling */
+.btn-outline-secondary {
+    color: var(--gray);
+    border-color: #e2e8f0;
+    font-size: 0.85rem;
+    padding: 5px 12px;
+    transition: all 0.2s ease;
+}
+
+.btn-outline-secondary:hover {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: white;
+}
+
+/* Waves animation */
+.waves {
+    position: relative;
+    width: 100%;
+    height: 10vh;
+    margin-bottom: -7px;
+    min-height: 100px;
+    max-height: 150px;
+    z-index: 0;
+}
+
+.parallax > use {
+    animation: move-forever 25s cubic-bezier(.55,.5,.45,.5) infinite;
+}
+.parallax > use:nth-child(1) {
+    animation-delay: -2s;
+    animation-duration: 7s;
+}
+.parallax > use:nth-child(2) {
+    animation-delay: -3s;
+    animation-duration: 10s;
+}
+.parallax > use:nth-child(3) {
+    animation-delay: -4s;
+    animation-duration: 13s;
+}
+.parallax > use:nth-child(4) {
+    animation-delay: -5s;
+    animation-duration: 20s;
+}
+@keyframes move-forever {
+    0% {
+        transform: translate3d(-90px,0,0);
+    }
+    100% { 
+        transform: translate3d(85px,0,0);
+    }
+}
+
+.compact-emotion {
+    margin-bottom: 5px;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    padding: 3px 0;
+}
+
+#emotion-details {
+    padding-left: 5px;
+}
+
+@media (max-width: 767px) {
+    #emotion-details {
+        margin-top: 10px !important;
+    }
+}
+
+/* Make chart more compact */
+canvas#emotion-chart {
+    margin-bottom: 0 !important;
+} 

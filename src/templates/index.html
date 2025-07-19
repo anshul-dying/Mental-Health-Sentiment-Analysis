@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MindWatch - Mental Health Sentiment Analysis</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.0.2/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #c7d2fe;
+            --secondary: #10b981;
+            --secondary-dark: #059669;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --light: #f9fafb;
+            --dark: #1e293b;
+            --gray: #94a3b8;
+            --card-bg: #ffffff;
+            --border-radius: 16px;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.03);
+            --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.08), 0 20px 30px rgba(0, 0, 0, 0.05);
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #f8faff 0%, #f1f5f9 100%);
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark);
+            line-height: 1.7;
+            padding-bottom: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Enhanced header styling */
+        .header-container {
+            position: relative;
+            overflow: hidden;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            border-radius: var(--border-radius);
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            box-shadow: var(--shadow);
+        }
+
+        header {
+            padding: 15px 0;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        header h1 {
+            color: white;
+            font-weight: 800;
+            font-size: 2.4rem;
+            margin-bottom: 0;
+            font-family: 'DM Sans', sans-serif;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        header p.lead {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        /* Background particles */
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .particles span {
+            position: absolute;
+            display: block;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .card {
+            border: none;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+            background-color: var(--card-bg);
+            transition: var(--transition);
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-title {
+            color: var(--dark);
+            font-weight: 700;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .card-title i {
+            margin-right: 8px;
+            color: var(--primary);
+        }
+
+        textarea.form-control {
+            border-radius: calc(var(--border-radius) - 4px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 15px;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 150px;
+            transition: var(--transition);
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+            background-color: rgba(249, 250, 251, 0.8);
+            font-family: 'Inter', sans-serif;
+        }
+
+        textarea.form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            outline: none;
+            background-color: white;
+        }
+
+        .btn {
+            border-radius: calc(var(--border-radius) - 4px);
+            padding: 10px 18px;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-outline-secondary {
+            color: var(--gray);
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            padding: 8px 12px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .btn-outline-secondary:hover {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border-color: var(--primary);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Enhanced progress bar */
+        .progress {
+            height: 10px;
+            border-radius: 5px;
+            background-color: #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 10px;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, var(--primary), var(--primary-dark));
+            transition: width 1s cubic-bezier(0.22, 1, 0.36, 1);
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.3);
+        }
+
+        .progress-bar.bg-warning {
+            background: linear-gradient(90deg, var(--warning), #f97316) !important;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.3);
+        }
+
+        .progress-bar.bg-danger {
+            background: linear-gradient(90deg, var(--danger), #dc2626) !important;
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.3);
+        }
+
+        .progress-bar.bg-success {
+            background: linear-gradient(90deg, var(--secondary), var(--secondary-dark)) !important;
+            box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Enhanced analysis text styling for markdown */
+        .analysis-text {
+            padding: 20px;
+            background-color: #f8fafc;
+            border-radius: calc(var(--border-radius) - 4px);
+            min-height: 150px;
+            max-height: 350px;
+            overflow-y: auto;
+            font-size: 15px;
+            line-height: 1.6;
+            color: #475569;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: var(--transition);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-light) #f1f5f9;
+        }
+
+        .analysis-text::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .analysis-text::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 4px;
+        }
+
+        .analysis-text::-webkit-scrollbar-thumb {
+            background-color: var(--primary-light);
+            border-radius: 4px;
+        }
+
+        /* Markdown styling */
+        .analysis-text h1,
+        .analysis-text h2,
+        .analysis-text h3,
+        .analysis-text h4 {
+            color: var(--dark);
+            font-weight: 600;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .analysis-text h1 {
+            font-size: 1.7rem;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 0.3em;
+        }
+
+        .analysis-text h2 {
+            font-size: 1.4rem;
+        }
+
+        .analysis-text h3 {
+            font-size: 1.2rem;
+            color: var(--primary-dark);
+        }
+
+        .analysis-text h4 {
+            font-size: 1rem;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            margin-top: 1.2em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .analysis-text h4 i {
+            margin-right: 8px;
+        }
+
+        .analysis-text p {
+            margin-bottom: 1em;
+        }
+
+        .analysis-text ul,
+        .analysis-text ol {
+            padding-left: 1.5em;
+            margin-bottom: 1em;
+        }
+
+        .analysis-text li {
+            margin-bottom: 0.5em;
+        }
+
+        .analysis-text a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .analysis-text a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .analysis-text blockquote {
+            border-left: 4px solid var(--primary-light);
+            padding-left: 1em;
+            margin-left: 0;
+            color: #64748b;
+        }
+
+        .analysis-text code {
+            background-color: rgba(99, 102, 241, 0.1);
+            padding: 0.2em 0.4em;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .analysis-text pre {
+            background-color: #1e293b;
+            color: #f8fafc;
+            padding: 1em;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 1em 0;
+        }
+
+        .analysis-text pre code {
+            background-color: transparent;
+            color: inherit;
+            padding: 0;
+        }
+
+        .analysis-text hr {
+            border: 0;
+            border-top: 1px solid #e2e8f0;
+            margin: 1.5em 0;
+        }
+
+        .analysis-text table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1em 0;
+        }
+
+        .analysis-text th,
+        .analysis-text td {
+            border: 1px solid #e2e8f0;
+            padding: 0.5em;
+        }
+
+        .analysis-text th {
+            background-color: #f1f5f9;
+            font-weight: 600;
+        }
+
+        /* Intensity label positioning */
+        .intensity-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: #475569;
+        }
+
+        .autism-score {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0;
+            line-height: 1;
+        }
+
+        .emoji-icon {
+            font-size: 1.1rem;
+            margin-right: 3px;
+        }
+
+        /* Enhanced tab styling */
+        .nav-tabs {
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            gap: 5px;
+        }
+
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--gray);
+            font-size: 0.95rem;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 8px 8px 0 0;
+            margin-right: 5px;
+            transition: var(--transition);
+        }
+
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            background-color: white;
+            border-bottom: 3px solid var(--primary);
+            font-weight: 600;
+        }
+
+        .tab-content {
+            padding-top: 10px;
+        }
+
+        /* Enhanced loading animation */
+        .loading {
+            position: relative;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(4px);
+            border-radius: var(--border-radius);
+            z-index: 10;
+        }
+
+        .loading::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            z-index: 11;
+            box-shadow: 0 0 10px rgba(99, 102, 241, 0.2);
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* Enhanced tooltip for copy button */
+        .copy-tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .copy-tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: var(--dark);
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            padding: 6px 10px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+            transform: translateY(10px);
+            font-size: 12px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .copy-tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Enhanced alert styling */
+        .alert {
+            border-radius: var(--border-radius);
+            padding: 15px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--warning);
+            background-color: rgba(245, 158, 11, 0.1);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: flex-start;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .alert-warning {
+            color: #92400e;
+        }
+
+        .alert i {
+            margin-right: 10px;
+            font-size: 1.1rem;
+            margin-top: 3px;
+        }
+
+        .alert strong {
+            font-weight: 600;
+        }
+
+        .alert ol,
+        .alert ul {
+            margin-bottom: 0;
+            margin-top: 10px;
+        }
+
+        /* Empty state styling */
+        .text-muted.text-center {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            min-height: 120px;
+            font-size: 0.95rem;
+            color: #64748b;
+        }
+
+        .text-muted.text-center i {
+            margin-bottom: 15px;
+            color: #cbd5e1;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+        }
+
+        /* Emotion details enhancement */
+        .compact-emotion {
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            line-height: 1.3;
+            padding: 6px 8px;
+            border-radius: 6px;
+            transition: var(--transition);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .compact-emotion:hover {
+            background-color: rgba(99, 102, 241, 0.05);
+        }
+
+        .compact-emotion.fw-bold {
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        #emotion-details {
+            padding: 8px;
+            border-radius: calc(var(--border-radius) - 4px);
+            background-color: rgba(248, 250, 252, 0.5);
+        }
+
+        /* Footer enhancements */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 20px;
+        }
+
+        footer p {
+            margin-bottom: 0;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+
+        footer i.fa-heart {
+            color: var(--danger);
+            animation: heartbeat 1.5s ease-in-out infinite;
+        }
+
+        @keyframes heartbeat {
+            0% {
+                transform: scale(1);
+            }
+
+            25% {
+                transform: scale(1.1);
+            }
+
+            50% {
+                transform: scale(1);
+            }
+
+            75% {
+                transform: scale(1.1);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .container {
+                padding: 15px;
+            }
+
+            .card {
+                margin-bottom: 20px;
+            }
+
+            .analysis-text {
+                max-height: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+
+            header h1 {
+                font-size: 2rem;
+            }
+
+            .card-body {
+                padding: 15px;
+            }
+
+            .analysis-text {
+                min-height: 120px;
+                padding: 15px;
+            }
+
+            .btn {
+                padding: 8px 15px;
+            }
+
+            .autism-score {
+                font-size: 1.7rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Enhanced header with particles -->
+    <div class="container">
+        <div class="header-container">
+            <div class="particles" id="particles"></div>
+            <header>
+                <h1>MindWatch <i class="fas fa-brain"></i></h1>
+                <p class="lead">Advanced Mental Health Sentiment Analysis</p>
+            </header>
+        </div>
+
+        <div id="model-warning" class="alert alert-warning" style="display: none;">
+            <i class="fas fa-exclamation-triangle"></i>
+            <div>
+                <strong>Warning:</strong> Models not trained yet. Please train the models first.
+                <br>
+                To train models, run:
+                <ol class="mb-0">
+                    <li><code>python src/train_sentiment.py</code></li>
+                    <li><code>python src/train_autism.py</code></li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-keyboard"></i> Enter Text</h5>
+                        <textarea id="input-text" class="form-control" rows="5"
+                            placeholder="Type or paste your text here for analysis (minimum 10 characters)..."></textarea>
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            <div>
+                                <button id="clear-btn" class="btn btn-outline-secondary">
+                                    <i class="fas fa-eraser me-1"></i> Clear
+                                </button>
+                            </div>
+                            <button id="analyze-btn" class="btn btn-primary">
+                                <i class="fas fa-brain me-2"></i> Analyze
+                            </button>
+                        </div>
+                        <div class="sample-buttons-container mt-3">
+                            <p class="text-muted small mb-2">AI-Generated Samples:</p>
+                            <div class="d-flex flex-wrap gap-2">
+                                <button id="anxiety-btn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-wind me-1"></i> Anxiety
+                                </button>
+                                <button id="depression-btn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-cloud-rain me-1"></i> Depression
+                                </button>
+                                <button id="sadness-btn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-frown me-1"></i> Sadness
+                                </button>
+                                <button id="happiness-btn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-smile-beam me-1"></i> Happiness
+                                </button>
+                                <button id="autism-btn" class="btn btn-sm btn-outline-secondary">
+                                    <i class="fas fa-puzzle-piece me-1"></i> Autism
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title"><i class="fas fa-chart-pie"></i> Emotion Analysis</h5>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <canvas id="emotion-chart" height="150"></canvas>
+                            </div>
+                            <div class="col-md-4">
+                                <div id="emotion-details" class="mt-0">
+                                    <p class="text-muted text-center">
+                                        <i class="fas fa-comment-dots fa-2x mb-3 d-block"></i>
+                                        Enter text to see emotion breakdown
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-7">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0"><i class="fas fa-sliders-h"></i> Autism Likelihood</h5>
+                            <div class="autism-score">--</div>
+                        </div>
+                        <div id="autism-result" class="text-center mb-3">
+                            <div class="intensity-label">
+                                <span>Low</span>
+                                <span>Medium</span>
+                                <span>High</span>
+                            </div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" style="width: 0%;" aria-valuenow="0"
+                                    aria-valuemin="0" aria-valuemax="100">
+                                </div>
+                            </div>
+                            <p class="mt-2 mb-0 text-muted">Enter text to analyze autism likelihood</p>
+                        </div>
+
+                        <!-- Enhanced tabs navigation -->
+                        <ul class="nav nav-tabs" id="resultTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="suggestions-tab" data-bs-toggle="tab"
+                                    data-bs-target="#suggestions-content" type="button" role="tab"
+                                    aria-controls="suggestions-content" aria-selected="true">
+                                    <i class="fas fa-lightbulb me-1"></i> Mental Health Insights
+                                </button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="autism-tab" data-bs-toggle="tab"
+                                    data-bs-target="#autism-content" type="button" role="tab"
+                                    aria-controls="autism-content" aria-selected="false">
+                                    <i class="fas fa-comment-medical me-1"></i> Autism Analysis
+                                </button>
+                            </li>
+                        </ul>
+
+                        <!-- Tab content for Markdown rendering -->
+                        <div class="tab-content" id="resultTabContent">
+                            <div class="tab-pane fade show active" id="suggestions-content" role="tabpanel"
+                                aria-labelledby="suggestions-tab">
+                                <div id="suggestions" class="analysis-text">
+                                    <p class="text-muted text-center">
+                                        <i class="fas fa-comment-dots fa-2x mb-3 d-block"></i>
+                                        Enter text to receive personalized mental health suggestions
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button id="copy-suggestions" class="btn btn-sm btn-outline-secondary copy-tooltip"
+                                        style="display: none;">
+                                        <i class="fas fa-copy"></i> Copy
+                                        <span class="tooltiptext">Copy to clipboard</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="tab-pane fade" id="autism-content" role="tabpanel" aria-labelledby="autism-tab">
+                                <div id="autism-analysis" class="analysis-text">
+                                    <p class="text-muted text-center">
+                                        <i class="fas fa-comment-dots fa-2x mb-3 d-block"></i>
+                                        Enter text to receive autism-specific analysis
+                                    </p>
+                                </div>
+                                <div class="d-flex justify-content-end mt-2">
+                                    <button id="copy-analysis" class="btn btn-sm btn-outline-secondary copy-tooltip"
+                                        style="display: none;">
+                                        <i class="fas fa-copy"></i> Copy
+                                        <span class="tooltiptext">Copy to clipboard</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p class="text-muted">
+                <small>
+                    MindWatch © 2025 | Developed with <i class="fas fa-heart"></i> for mental health awareness
+                </small>
+            </p>
+        </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let emotionChart = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function () {
+            createParticles();
+            initializeChart();
+            setupEventListeners();
+            animateElements();
+        });
+
+        // Create animated particles
+        function createParticles() {
+            const particles = document.getElementById('particles');
+            const particleCount = 15;
+
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('span');
+                const size = Math.random() * 30 + 5;
+                const positionX = Math.random() * 100;
+                const positionY = Math.random() * 100;
+
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.top = `${positionY}%`;
+                particle.style.left = `${positionX}%`;
+                particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+
+                particles.appendChild(particle);
+            }
+        }
+
+        // Animate UI elements with GSAP
+        function animateElements() {
+            gsap.from('.card', {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                stagger: 0.1,
+                ease: 'power2.out'
+            });
+        }
+
+        function initializeChart() {
+            const ctx = document.getElementById('emotion-chart').getContext('2d');
+            emotionChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Sadness', 'Joy', 'Love', 'Anger', 'Fear', 'Surprise'],
+                    datasets: [{
+                        label: 'Emotion Score',
+                        data: [0, 0, 0, 0, 0, 0],
+                        backgroundColor: [
+                            'rgba(99, 102, 241, 0.7)',   // sadness (purple/blue)
+                            'rgba(16, 185, 129, 0.7)',   // joy (green)
+                            'rgba(236, 72, 153, 0.7)',   // love (pink)
+                            'rgba(239, 68, 68, 0.7)',    // anger (red)
+                            'rgba(245, 158, 11, 0.7)',   // fear (yellow/orange)
+                            'rgba(139, 92, 246, 0.7)'    // surprise (purple)
+                        ],
+                        borderColor: [
+                            'rgba(99, 102, 241, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(236, 72, 153, 1)',
+                            'rgba(239, 68, 68, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(139, 92, 246, 1)'
+                        ],
+                        borderWidth: 1,
+                        borderRadius: 5,
+                        maxBarThickness: 40
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 1,
+                            ticks: {
+                                stepSize: 0.2
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function setupEventListeners() {
+            // Analyze button
+            document.getElementById('analyze-btn').addEventListener('click', analyzeText);
+
+            // Clear button
+            document.getElementById('clear-btn').addEventListener('click', () => {
+                document.getElementById('input-text').value = '';
+            });
+
+            // Sample text buttons
+            document.getElementById('anxiety-btn').addEventListener('click', () => {
+                fetchSampleText('anxiety');
+            });
+
+            document.getElementById('depression-btn').addEventListener('click', () => {
+                fetchSampleText('depression');
+            });
+
+            document.getElementById('sadness-btn').addEventListener('click', () => {
+                fetchSampleText('sadness');
+            });
+
+            document.getElementById('happiness-btn').addEventListener('click', () => {
+                fetchSampleText('happiness');
+            });
+
+            document.getElementById('autism-btn').addEventListener('click', () => {
+                fetchSampleText('autism');
+            });
+
+            // Copy buttons
+            document.getElementById('copy-suggestions').addEventListener('click', () => {
+                copyToClipboard('suggestions');
+            });
+
+            document.getElementById('copy-analysis').addEventListener('click', () => {
+                copyToClipboard('autism-analysis');
+            });
+        }
+
+        async function analyzeText() {
+            const text = document.getElementById('input-text').value;
+            if (text.length < 10) {
+                alert('Please enter at least 10 characters');
+                return;
+            }
+
+            // Add loading indicators
+            const elements = ['emotion-chart', 'autism-result', 'suggestions', 'autism-analysis'];
+            elements.forEach(id => document.getElementById(id).closest('.card').classList.add('loading'));
+
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await response.json();
+
+                // Remove loading indicators
+                elements.forEach(id => document.getElementById(id).closest('.card').classList.remove('loading'));
+
+                if (response.ok) {
+                    if (data.error) {
+                        // Show model warning
+                        document.getElementById('model-warning').style.display = 'block';
+                        return;
+                    }
+
+                    // Hide model warning if it was shown
+                    document.getElementById('model-warning').style.display = 'none';
+
+                    // Update emotion chart
+                    updateEmotionChart(data.emotions);
+
+                    // Update autism likelihood
+                    updateAutismLikelihood(data.autism_likelihood);
+
+                    // Update suggestions with markdown
+                    updateTextSectionWithMarkdown('suggestions', data.suggestions);
+                    document.getElementById('copy-suggestions').style.display = 'inline-block';
+
+                    // Update autism analysis with markdown
+                    updateTextSectionWithMarkdown('autism-analysis', data.autism_analysis);
+                    document.getElementById('copy-analysis').style.display = 'inline-block';
+
+                    // Switch to insights tab
+                    document.getElementById('suggestions-tab').click();
+
+                    // Add animation for results
+                    animateResults();
+                } else {
+                    alert(data.error || 'An error occurred');
+                }
+            } catch (error) {
+                // Remove loading indicators
+                elements.forEach(id => document.getElementById(id).closest('.card').classList.remove('loading'));
+                alert('An error occurred while analyzing the text');
+                console.error(error);
+            }
+        }
+
+        function animateResults() {
+            gsap.from('.progress-bar', {
+                width: '0%',
+                duration: 1,
+                ease: 'power2.out'
+            });
+
+            gsap.from('.autism-score', {
+                textContent: 0,
+                duration: 1,
+                snap: { textContent: 1 },
+                stagger: 0.5,
+                ease: 'power2.out'
+            });
+
+            gsap.from('.analysis-text', {
+                opacity: 0,
+                y: 10,
+                duration: 0.5,
+                ease: 'power2.out'
+            });
+        }
+
+        function updateEmotionChart(emotions) {
+            const emotionLabels = Object.keys(emotions).map(label =>
+                label.charAt(0).toUpperCase() + label.slice(1)
+            );
+            const emotionValues = Object.values(emotions);
+
+            // Update chart data
+            emotionChart.data.labels = emotionLabels;
+            emotionChart.data.datasets[0].data = emotionValues;
+            emotionChart.update();
+
+            // Update emoji indicators
+            const emojis = {
+                'Sadness': '😢',
+                'Joy': '😊',
+                'Love': '💖',
+                'Anger': '😣',
+                'Fear': '😰',
+                'Surprise': '😯'
+            };
+
+            // Find dominant emotion
+            let maxEmotion = '';
+            let maxValue = 0;
+            Object.entries(emotions).forEach(([emotion, value]) => {
+                if (value > maxValue) {
+                    maxValue = value;
+                    maxEmotion = emotion;
+                }
+            });
+
+            // Create emotion details HTML
+            let detailsHTML = '';
+            Object.entries(emotions).forEach(([emotion, value]) => {
+                const percentage = Math.round(value * 100);
+                const capitalized = emotion.charAt(0).toUpperCase() + emotion.slice(1);
+                const emoji = emojis[capitalized] || '';
+                const isBold = emotion === maxEmotion ? 'fw-bold' : '';
+
+                detailsHTML += `
+                <div class="d-flex justify-content-between align-items-center ${isBold} compact-emotion">
+                    <span><span class="emoji-icon">${emoji}</span>${capitalized}</span>
+                    <span>${percentage}%</span>
+                </div>`;
+            });
+
+            document.getElementById('emotion-details').innerHTML = detailsHTML;
+        }
+
+        function updateAutismLikelihood(likelihood) {
+            const percentage = Math.round(likelihood * 100);
+            const progressBar = document.querySelector('.progress-bar');
+
+            // Update progress bar
+            progressBar.style.width = `${percentage}%`;
+
+            // Clear existing classes
+            progressBar.classList.remove('bg-success', 'bg-warning', 'bg-danger');
+
+            // Update color and text based on likelihood
+            if (percentage > 70) {
+                progressBar.classList.add('bg-danger');
+            } else if (percentage > 30) {
+                progressBar.classList.add('bg-warning');
+            } else {
+                progressBar.classList.add('bg-success');
+            }
+
+            // Update score display
+            document.querySelector('.autism-score').textContent = `${percentage}%`;
+
+            // Update text
+            const textElement = document.querySelector('#autism-result p');
+            if (percentage > 70) {
+                textElement.textContent = 'High likelihood of autism indicators present';
+            } else if (percentage > 30) {
+                textElement.textContent = 'Moderate likelihood of autism indicators present';
+            } else {
+                textElement.textContent = 'Low likelihood of autism indicators present';
+            }
+        }
+
+        // Use définition for text formatting
+        function updateTextSectionWithMarkdown(elementId, content) {
+            if (!content) {
+                content = 'No results available';
+            }
+
+            // Process specific elements before markdown conversion
+            if (elementId === 'suggestions') {
+                // Format emotion headers with icons
+                ['Sadness', 'Joy', 'Love', 'Anger', 'Fear', 'Surprise'].forEach(emotion => {
+                    const pattern = new RegExp(`${emotion} Suggestions:`, 'g');
+                    content = content.replace(pattern, `### <i class="fas fa-${getEmotionIcon(emotion)} text-${getEmotionColor(emotion)}"></i> ${emotion} Suggestions:`);
+                });
+
+                // Add icon to "No strong emotions detected"
+                if (content.includes('No strong emotions detected')) {
+                    content = content.replace(
+                        /No strong emotions detected[^\n]*/g,
+                        '### <i class="fas fa-info-circle text-primary"></i> General Wellness\n\nNo strong emotions detected that require specific suggestions.'
+                    );
+                }
+            }
+            // Format autism analysis
+            else if (elementId === 'autism-analysis') {
+                // Add heading to "Based on this text"
+                content = content.replace(
+                    /Based on the text/g,
+                    '### <i class="fas fa-brain text-primary"></i> Analysis Results\n\nBased on the text'
+                );
+
+                // Format numbered suggestions with better markdown
+                content = content.replace(/(\d+\.\s\*\*[^*]+\*\*)/g, '#### $1');
+            }
+
+            // Convert markdown to HTML
+            const htmlContent = marked.parse(content);
+            document.getElementById(elementId).innerHTML = htmlContent;
+        }
+
+        // Helper function to get appropriate icon for emotion
+        function getEmotionIcon(emotion) {
+            const icons = {
+                'Sadness': 'frown',
+                'Joy': 'smile-beam',
+                'Love': 'heart',
+                'Anger': 'face-angry',
+                'Fear': 'wind',
+                'Surprise': 'face-surprise'
+            };
+            return icons[emotion] || 'comment';
+        }
+
+        // Helper function to get color class for emotion
+        function getEmotionColor(emotion) {
+            const colors = {
+                'Sadness': 'primary',
+                'Joy': 'success',
+                'Love': 'danger',
+                'Anger': 'danger',
+                'Fear': 'warning',
+                'Surprise': 'secondary'
+            };
+            return colors[emotion] || 'secondary';
+        }
+
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            const text = element.innerText;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const tooltipElement = document.querySelector(`#copy-${elementId.split('-')[0]} .tooltiptext`);
+                tooltipElement.textContent = "Copied!";
+
+                gsap.to(tooltipElement, {
+                    opacity: 1,
+                    y: 0,
+                    duration: 0.3,
+                    ease: 'power2.out'
+                });
+
+                setTimeout(() => {
+                    tooltipElement.textContent = "Copy to clipboard";
+                    gsap.to(tooltipElement, {
+                        opacity: 0,
+                        y: 5,
+                        duration: 0.3,
+                        ease: 'power2.in'
+                    });
+                }, 2000);
+            });
+        }
+
+        // Function to fetch sample text from Gemini API
+        async function fetchSampleText(type) {
+            try {
+                const button = document.getElementById(`${type}-btn`);
+                const originalText = button.innerHTML;
+
+                // Disable all sample buttons
+                document.querySelectorAll('.sample-buttons-container .btn').forEach(btn => {
+                    btn.disabled = true;
+                });
+
+                // Show loading on clicked button
+                button.innerHTML = `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Loading...`;
+
+                const response = await fetch(`/generate-sample?type=${type}`);
+                const data = await response.json();
+
+                // Reset clicked button
+                button.innerHTML = originalText;
+
+                // Enable all buttons
+                document.querySelectorAll('.sample-buttons-container .btn').forEach(btn => {
+                    btn.disabled = false;
+                });
+
+                if (response.ok) {
+                    if (data.sample) {
+                        // Set textarea value with animation
+                        const textArea = document.getElementById('input-text');
+                        textArea.value = '';
+                        let i = 0;
+                        const text = data.sample;
+                        const typingInterval = setInterval(() => {
+                            if (i < text.length) {
+                                textArea.value += text.charAt(i);
+                                textArea.scrollTop = textArea.scrollHeight;
+                                i++;
+                            } else {
+                                clearInterval(typingInterval);
+                            }
+                        }, 10);
+                    } else if (data.error) {
+                        alert(data.error);
+                    }
+                } else {
+                    throw new Error(data.error || 'Failed to fetch sample text');
+                }
+
+            } catch (error) {
+                console.error('Error fetching sample text:', error);
+                alert('Failed to fetch sample text. Please try again.');
+
+                // Reset all buttons in case of error
+                document.querySelectorAll('.sample-buttons-container .btn').forEach(btn => {
+                    const id = btn.id;
+                    const type = id.split('-')[0];
+                    let icon = 'fas fa-brain';
+
+                    switch (type) {
+                        case 'anxiety': icon = 'fas fa-wind'; break;
+                        case 'depression': icon = 'fas fa-cloud-rain'; break;
+                        case 'sadness': icon = 'fas fa-frown'; break;
+                        case 'happiness': icon = 'fas fa-smile-beam'; break;
+                        case 'autism': icon = 'fas fa-puzzle-piece'; break;
+                    }
+
+                    btn.innerHTML = `<i class="${icon} me-1"></i> ${type.charAt(0).toUpperCase() + type.slice(1)}`;
+                    btn.disabled = false;
+                });
+            }
+        }
+    </script>
+</body>
+
+</html> 
